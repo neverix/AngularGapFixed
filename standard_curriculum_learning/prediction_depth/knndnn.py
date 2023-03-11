@@ -77,6 +77,7 @@ class MLP7(nn.Module):
 
 def knn_predict(feature, feature_bank, feature_labels, classes, knn_k, knn_t, rm_top1=True, dist='l2'):
     # compute cos similarity between each feature vector and feature bank ---> [B, N]
+    feature_bank = feature_bank.T.contiguous().clone()
     B, F = feature.shape
     K, F = feature_bank.shape
     if dist =='cosine':
@@ -84,9 +85,10 @@ def knn_predict(feature, feature_bank, feature_labels, classes, knn_k, knn_t, rm
         feature_bank = F.normalize(feature_bank, dim=1, p=2.0)     # normalize feature dim
         feature.mul_(feature_bank.t().contiguous()) # similarity
     elif dist =='l2':
-        feature = feature.unsqueeze(1).expand(B, K, F)
-        feature_bank = feature_bank.unsqueeze(0).expand(B, K, F)
-        feature.sub_(feature_bank).pow_(2).sum_(2)  # similarity
+        feature = feature.unsqueeze(1).expand(B, K, F).clone()
+        feature_bank = feature_bank.unsqueeze(0).expand(B, K, F).clone()
+        feature.sub_(feature_bank).pow_(2)
+        feature = feature.sum(2)  # similarity
     else:
         raise NotImplementedError
 

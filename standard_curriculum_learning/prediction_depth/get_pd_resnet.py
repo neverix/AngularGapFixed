@@ -1,6 +1,7 @@
 import torch
 from knndnn import VGGPD, MLP7, ResNetPD, BasicBlockPD
 from knndnn import knn_predict
+from mydata import NCIFAR10, NCIFAR100
 from torchvision.datasets import CIFAR10, CIFAR100
 import torchvision.transforms as T
 from torch.utils.data import DataLoader, Subset
@@ -44,6 +45,8 @@ if args.arch == 'mlp':
 elif args.arch == 'vgg':
     max_prediction_depth = 14
 elif args.arch == 'resnet':
+    max_prediction_depth = 10
+else:
     max_prediction_depth = 10
 
 if not os.path.exists(args.result_dir):
@@ -226,10 +229,10 @@ def main(train_idx, val_idx, random_seed=1234, flip=''):
                                 T.Normalize(mean=[0.4914, 0.4822, 0.4465], std=(0.247, 0.243, 0.261))
                                 ])
     if args.data == 'cifar10':
-        trainset = CIFAR10('./', transform=train_transform, train=True, download=False)
+        trainset = NCIFAR10('./', transform=train_transform, train=True, download=False)
         testset = CIFAR10('./', transform=train_transform, train=False, download=False)
     else:
-        trainset = CIFAR100('./', transform=train_transform, train=True, download=False)
+        trainset = NCIFAR100('./', transform=train_transform, train=True, download=False)
         testset = CIFAR100('./', transform=train_transform, train=False, download=False)
 
     train_split = Subset(trainset, train_idx)
