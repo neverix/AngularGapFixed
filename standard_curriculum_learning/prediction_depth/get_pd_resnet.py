@@ -305,7 +305,7 @@ def main(train_idx, val_idx, random_seed=1234, flip=''):
 
 
 if __name__ == '__main__':
-    seeds = [1111, 2222, 3333, 4444, 5555, 6666]
+    seeds = [1111, 2222, 3333, 4444, 5555, 6666, 7777, 8888, 9999]
     for seed in seeds:
         set_seed(seed)
         train_indices, val_indices = train_test_split(np.arange(10000), train_size=args.train_ratio,

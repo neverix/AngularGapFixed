@@ -129,9 +129,10 @@ class BasicBlockPD(nn.Module):
             )
 
     def forward(self, x, train=True):
-        out = F.relu_(self.bn1(self.conv1(x)))
+        # train = self.is_training
+        out = F.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
-        out += self.shortcut(x)
+        out = out + self.shortcut(x)
         if not train:
             return None, out
         else:
@@ -169,11 +170,12 @@ class ResNetPD(nn.Module):
         :param train: switch model to test and extract the FMs of the kth layer
         :return:
         '''
+        # train = self.is_training
         i = 0
         out = self.bn1(self.conv1(x))
         if k==i and not(train):
             return None, out.view(out.shape[0], -1)
-        out = torch.relu_(out)
+        out = torch.relu(out)
         i +=1
         for module in self.layer1:
             if k ==i and not(train):
@@ -181,7 +183,7 @@ class ResNetPD(nn.Module):
                 return None, out.view(out.shape[0], -1)
             else:
                 out = module(out)
-            out = torch.relu_(out)
+            out = torch.relu(out)
             i+=1
 
         for module in self.layer2:
@@ -190,7 +192,7 @@ class ResNetPD(nn.Module):
                 return None, out.view(out.shape[0], -1)
             else:
                 out = module(out)
-            out = torch.relu_(out)
+            out = torch.relu(out)
             i+=1
         for module in self.layer3:
             if k ==i and not(train):
@@ -198,7 +200,7 @@ class ResNetPD(nn.Module):
                 return None, out.view(out.shape[0], -1)
             else:
                 out = module(out)
-            out = torch.relu_(out)
+            out = torch.relu(out)
             i+=1
         for module in self.layer4:
             if k ==i and not(train):
@@ -206,7 +208,7 @@ class ResNetPD(nn.Module):
                 return None, out.view(out.shape[0], -1)
             else:
                 out = module(out)
-            out = torch.relu_(out)
+            out = torch.relu(out)
             i+=1
         out = F.avg_pool2d(out, 4)
         out = out.view(out.size(0), -1)
